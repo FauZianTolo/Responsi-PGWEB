@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 100vh;
+        }
+
+        /* Background pada Judul */
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .info h2 {
+            margin: 0;
+            padding: 5px 0;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+
+        var map = L.map('map').setView([-7.7956, 110.3695], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 13,
+            attribution: 'Map data ©️ <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var geoserver = L.geoJson(null, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    // icon: L.icon({
+                    //   iconUrl: "assets/img/marker/fas_rumahsakit_rujukan.png",
+                    //   iconSize: [32, 32],
+                    //   iconAnchor: [16, 32],
+                    //   popupAnchor: [0, -32],
+                    //   tooltipAnchor: [16, -20]
+                    // })
+                });
+            },
+            onEachFeature: function (feature, layer) {
+                var content = "Kecamatan: " + feature.properties.kecamatan + "<br>" +
+                    "Jumlah: " + feature.properties.jumlah + "<br>";
+
+                layer.on({
+                    click: function (e) {
+                        geoserver.bindPopup(content).openPopup();
+                    },
+                    mouseover: function (e) {
+                        geoserver.bindTooltip(feature.properties.kecamatan).openTooltip();
+                    },
+                    mouseout: function (e) {
+                        geoserver.closePopup();
+                        geoserver.closeTooltip();
+                    }
+                });
+            }
+        });
+
+
+        $.getJSON("geoserver.php", function (data) {
+            geoserver.addData(data);
+            geoserver.addTo(map);
+            map.fitBounds(geoserver.getBounds());
+        });
+
+    </script>
+</body>
+
+</html>

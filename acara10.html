@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <!-- Search CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-search/leaflet-search.css" />
+
+    <!-- Geolocation CSS Library for Plugin -->
+    <link rel="stylesheet"
+        href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css" />
+
+    <!-- Leaflet Mouse Position CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.css" />
+
+    <!-- Leaflet Measure CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-measure/leaflet-measure.css" />
+
+    <!-- EasyPrint CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-easyprint/easyPrint.css" />
+
+    <!-- Marker Cluster -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-markercluster/MarkerCluster.css" />
+    <link rel="stylesheet" href="assets/plugins/leaflet-markercluster/MarkerCluster.Default.css" />
+
+    <!-- Routing -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-routing/leaflet-routing-machine.css" />
+
+    <style>
+        #map {
+            height: 100vh;
+        }
+
+        /* Background pada Judul */
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgba(16, 188, 19, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .info h2 {
+            margin: 0;
+            padding: 3px 0;
+            color: #ffffff;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Search JavaScript Library -->
+    <script src="assets/plugins/leaflet-search/leaflet-search.js"></script>
+
+    <!-- Geolocation Javascript Library -->
+    <script
+        src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+
+    <!-- Leaflet Mouse Position JavaScript Library -->
+    <script src="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.js"></script>
+
+    <!-- Leaflet Measure JavaScript Library -->
+    <script src="assets/plugins/leaflet-measure/leaflet-measure.js"></script>
+
+    <!-- EasyPrint JavaScript Library -->
+    <script src="assets/plugins/leaflet-easyprint/leaflet.easyPrint.js"></script>
+
+    <script src="assets/plugins/leaflet-markercluster/leaflet.markercluster.js"></script>
+    <script src="assets/plugins/leaflet-markercluster/leaflet.markercluster-src.js"></script>
+    <script src="assets/plugins/leaflet-routing/leaflet-routing-machine.js"></script>
+    <script src="assets/plugins/leaflet-routing/leaflet-routing-machine.min.js"></script>
+
+
+    <script>
+        var map = L.map('map').setView([-7.7956, 110.3695], 10);
+
+        // Create a GeoJSON layer for polygon data
+        var geoserver = L.geoJson(null, {
+            style: function (feature) {
+                // Adjust this function to define styles based on your polygon properties
+                var value = feature.properties.jumlah; // Change this to your actual property name
+                return {
+                    fillColor: getColor(value),
+                    weight: 2,
+                    opacity: 1,
+                    color: "black",
+                    dashArray: "3",
+                    fillOpacity: 0.7,
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                var content = "Kecamatan: " + feature.properties.kecamatan + "<br>" +
+                    "Jumlah: " + feature.properties.jumlah + "<br>";
+                layer.on({
+                    click: function (e) {
+                        geoserver.bindPopup(content).openPopup();
+                    },
+                    mouseover: function (e) {
+                        geoserver.bindTooltip(feature.properties.kecamatan).openTooltip();
+                    },
+                    mouseout: function (e) {
+                        geoserver.closePopup();
+                        geoserver.closeTooltip();
+                    }
+                });
+            }
+        });
+        $.getJSON("geoserver.php", function (data) {
+            geoserver.addData(data);
+            geoserver.addTo(map);
+            map.fitBounds(geoserver.getBounds());
+        });
+
+        /* Judul dan Subjudul */
+        var title = L.control();
+        title.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        title.update = function () {
+            this._div.innerHTML = '<h2>WEBGIS | JUMLAH PENDUDUK PER KECAMATAN KABUPATEN SLEMAN DIY DAN PERSEBARAN FASILITAS PERKANTORAN </h2>MATAKULIAH PEMROGRAMAN SPASIAL : WEB';
+        };
+        title.addTo(map);
+
+        // Pastikan Leaflet dan pustaka pendukung dimuat terlebih dahulu.
+        // Buat kontrol watermark
+        L.Control.Watermark = L.Control.extend({
+            onAdd: function (map) {
+                var img = L.DomUtil.create('img', 'custom-watermark'); // Tambahkan class CSS jika diperlukan
+                img.src = 'assets/img/logo/LOGO_SIG_BLUE.png'; // Sesuaikan dengan path gambar Anda
+                img.style.width = '200px';
+                return img;
+            }
+        });
+
+        // Tambahkan kontrol watermark ke peta
+        L.control.watermark = function (opts) {
+            return new L.Control.Watermark(opts);
+        };
+        L.control.watermark({ position: 'bottomleft' }).addTo(map);
+
+        // Image Legend
+        L.Control.Legend = L.Control.extend({
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'legend-container'); // Membuat div container
+                var img = L.DomUtil.create('img', 'legend-image', container); // Membuat elemen gambar dalam container
+                img.src = 'assets/img/legend/legenda.png';
+                img.style.width = '200px';
+                return container; // Mengembalikan container yang berisi gambar
+            }
+        });
+
+        L.control.legend = function (opts) {
+            return new L.Control.Legend(opts);
+        }
+
+        L.control.legend({ position: 'bottomleft' }).addTo(map);
+
+        //plugin search
+        var searchControl = new L.Control.Search({
+            position: "topleft",
+            layer: geoserver, //Nama variabel layer
+            propertyName: "kecamatan", //Field untuk pencarian
+            marker: false,
+            moveToLocation: function (latlng, title, map) {
+                var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+                map.setView(latlng, zoom);
+            },
+        });
+        searchControl
+            .on("search:locationfound", function (e) {
+                e.layer.setStyle({
+                    fillColor: "#ffff00",
+                    color: "#0000ff",
+                });
+            })
+            .on("search:collapse", function (e) {
+                featuresLayer.eachLayer(function (layer) {
+                    featuresLayer.resetStyle(layer);
+                });
+            });
+        map.addControl(searchControl);
+
+        /*Plugin Geolocation */
+        var locateControl = L.control
+            .locate({
+                position: "topleft",
+                drawCircle: true,
+                follow: true,
+                setView: true,
+                keepCurrentZoomLevel: false,
+                markerStyle: {
+                    weight: 10,
+                    opacity: 5,
+                    fillOpacity: 5,
+                },
+                circleStyle: {
+                    weight: 100,
+                    clickable: false,
+                },
+                icon: "fas fa-crosshairs",
+                metric: true,
+                strings: {
+                    title: "Click for Your Location",
+                    popup: "You're here. Accuracy {distance} {unit}",
+                    outsideMapBoundsMsg: "Not available",
+                },
+                locateOptions: {
+                    maxZoom: 16,
+                    watch: true,
+                    enableHighAccuracy: true,
+                    maximumAge: 10000,
+                    timeout: 10000,
+                },
+            })
+            .addTo(map);
+
+        /*Plugin Mouse Position Coordinate */
+        L.control.mousePosition({ position: "bottomright", separator: ",", prefix: "Point Coodinate: " }).addTo(map);
+
+        /*Plugin Measurement Tool */
+        var measureControl = new L.Control.Measure({
+            position: "topleft",
+            primaryLengthUnit: "meters",
+            secondaryLengthUnit: "kilometers",
+            primaryAreaUnit: "hectares",
+            secondaryAreaUnit: "sqmeters",
+            activeColor: "#FF0000",
+            completedColor: "#00FF00",
+        });
+        measureControl.addTo(map);
+
+
+        /*Plugin EasyPrint */
+        L.easyPrint({
+            title: "Print",
+        }).addTo(map);
+
+        /*  Tile Basemap */ // Pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/
+        var basemap1 = L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution:
+                    '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="DIVSIG UGM" target="_blank">DIVSIG UGM</a>',
+            }
+        );
+        var basemap2 = L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            {
+                attribution:
+                    'Tiles &copy; Esri | <a href="Latihan WebGIS" target="_blank">DIVSIG UGM</a>',
+            }
+        );
+        var basemap3 = L.tileLayer(
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            {
+                attribution:
+                    'Tiles &copy; Esri | <a href="Lathan WebGIS" target="_blank">DIVSIG UGM</a>',
+            }
+        );
+        var basemap4 = L.tileLayer(
+            "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+            {
+                attribution:
+                    '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+            }
+        );
+        var basemap5 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+            {
+                attribution:
+                    'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+            }
+        );
+        var basemap6 = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+            {
+                attribution:
+                    'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            }
+        );
+        var basemap7 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+            {
+                attribution:
+                    'Tiles &copy; Esri &mdash; Source: US National Park Service',
+            }
+        );
+
+        basemap1.addTo(map);
+
+        /* Control Layer */
+        var baseMaps = {
+            OpenStreetMap: basemap1,
+            "Esri World Street": basemap2,
+            "Esri Imagery": basemap3,
+            "Stadia Dark Mode": basemap4,
+            "Esri Nat Geo World Map": basemap5,
+            "Topo Map": basemap6,
+            "EsriWorldPhysical": basemap7
+        };
+
+        L.control.layers(baseMaps).addTo(map);
+
+        // Plugin Routing
+        L.Routing.control({
+            waypoints: [
+                L.latLng(-7.698019689147051, 110.44516755907983),
+                L.latLng(-7.75826466100891, 110.39357506015709),
+            ],
+            routeWhileDragging: true,
+        }).addTo(map);
+
+        // Layer Marker
+        var addressPoints = [
+            [-7.698019689147051, 110.44516755907983, "Kantor Kecamatan Ngemplak"],
+            [-7.7241363798445075, 110.40093315073996, "Kantor Kecamatan Ngaglik"],
+            [-7.68392927689691, 110.34053314505823, "Kantor Kecamatan Sleman"],
+            [-7.75826466100891, 110.39357506015709, "Kantor Kecamatan Depok"],
+            [-7.73401768751956, 110.32877435622201, "Kantor Kecamatan Mlati"],
+            [-7.769663957788461, 110.30007311707097, "Kantor Kecamatan Godean"],
+            [-7.805086501372151, 110.44273233574545, "Kantor Kecamatan Berbah"],
+            [-7.658721970316982, 110.45582861077374, "Kantor Kecamatan Cangkringan"],
+            [-7.667270162621609, 110.42001373987085, "Kantor Kecamatan Pakem"],
+            [-7.6519932043674705, 110.36977740094267, "Kantor Kecamatan Turi"],
+            [-7.651291712305269, 110.32676774345032, "Kantor Kecamatan Tempel"],
+            [-7.721020154404865, 110.30837596762291, "Kantor Kecamatan Seyegan"],
+            [-7.772319435165308, 110.25350926647037, "Kantor Kecamatan Moyudan"],
+            [-7.769990892716739, 110.46695877684347, "Kantor Kecamatan Kalasan"],
+            [-7.794981122153528, 110.32220288481493, "Kantor Kecamatan Gamping"],
+            [-7.725230526497276, 110.23472777042419, "Kantor Kecamatan Minggir"],
+            [-7.756224048448937, 110.49006356918888, "Kantor Kecamatan Prambanan"],
+        ];
+
+        var markers = L.markerClusterGroup();
+
+        for (var i = 0; i < addressPoints.length; i++) {
+            var a = addressPoints[i];
+            var title1 = a[2];
+            var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title1 });
+
+            marker.bindPopup(title1);
+            markers.addLayer(marker);
+        }
+
+        map.addLayer(markers);
+        // Function to determine the color based on the 'value' attribute
+        function getColor(value) {
+            return value > 75000
+                ? "#FF0000"
+                : value > 50000
+                    ? "#FFA500"
+                    : value > 10
+                        ? "#F5F5F5"
+                        : "#F5F5F5";
+        }
+
+    </script>
+</body>
+
+</html>

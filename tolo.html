@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Map with MySQL Data</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div id="map" style="height: 50vh;"></div>
+
+    <div class="container">
+        <h2>Data Table</h2>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Kecamatan</th>
+                    <th>Luas</th>
+                    <th>Jumlah Penduduk</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map('map').setView([-7.7956, 110.3695], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        var markers = L.layerGroup();
+
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var data = JSON.parse(this.responseText);
+
+                data.forEach(function (row) {
+                    var marker = L.marker([row.latitude, row.longitude]).addTo(markers);
+                    marker.bindPopup("<strong>" + row.kecamatan + "</strong><br><img src='" + row.photo + "' width='200'>");
+
+                    var tableRow = document.createElement('tr');
+                    tableRow.innerHTML = `
+                <td>${row.kecamatan}</td>
+                <td>${row.luas}</td>
+                <td>${row.jumlahpenduduk}</td>
+                <td>${row.latitude}</td>
+                <td>${row.longitude}</td>
+            `;
+                    document.getElementById('data-table').appendChild(tableRow);
+                });
+
+                markers.addTo(map); // Add the layer group to the map
+                map.fitBounds(markers.getBounds()); // Fit the map to the bounds of the markers
+            }
+        };
+
+        xmlhttp.open("GET", "index.php", true); // Replace "get_data.php" with your PHP script that fetches data
+        xmlhttp.send();
+
+
+       /* Tile Basemap */ // Pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/
+    var basemap1 = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution:
+                '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="DIVSIG UGM" target="_blank">DIVSIG UGM</a>',
+        }
+    );
+    var basemap2 = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        {
+            attribution:
+                'Tiles &copy; Esri | <a href="Latihan WebGIS" target="_blank">DIVSIG UGM</a>',
+        }
+    );
+    var basemap3 = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        {
+            attribution:
+                'Tiles &copy; Esri | <a href="Lathan WebGIS" target="_blank">DIVSIG UGM</a>',
+        }
+    );
+    var basemap4 = L.tileLayer(
+        "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+        {
+            attribution:
+                '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+        }
+    );
+    var basemap5 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+        {
+            attribution:
+                'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+        }
+    );
+    var basemap6 = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+        {
+            attribution:
+                'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+        }
+    );
+    var basemap7 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', 
+        {
+            attribution: 
+                'Tiles &copy; Esri &mdash; Source: US National Park Service',
+        }
+    );
+
+    basemap6.addTo(map);
+
+        /* Layer Marker */
+        var marker1 = L.marker([-7.766715, 110.377460], { draggable: true });
+        marker1.addTo(map);
+        marker1.bindPopup("Gedung B DIVSIG UGM");
+
+        var marker2 = L.marker([-7.743168, 110.350276]);
+        marker2.addTo(map);
+        marker2.bindPopup("RS.Akademik UGM");
+
+        /* Control Layer */
+        var baseMaps = {
+            OpenStreetMap: basemap1,
+            "Esri World Street": basemap2,
+            "Esri Imagery": basemap3,
+            "Stadia Dark Mode": basemap4,
+            "Esri Nat Geo World Map": basemap5,
+            "Topo Map": basemap6,
+            "EsriWorldPhysical": basemap7
+        };
+
+        var overlayMaps = {
+            "Gedung B DIVSIG UGM": marker1,
+            "RS.Akademik UGM": marker2,
+        };
+
+        L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+
+        /* Scale Bar */
+        L.control.scale({
+            maxWidth: 150, position: 'bottomright'
+        }).addTo(map);
+
+    </script>
+</body>
+
+</html>

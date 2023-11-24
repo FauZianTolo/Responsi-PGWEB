@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+
+<head>
+    <script src="../assets/js/color-modes.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SELOW</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/footers/">
+
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <!-- Search CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-search/leaflet-search.css" />
+
+    <!-- Geolocation CSS Library for Plugin -->
+    <link rel="stylesheet"
+        href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css" />
+
+    <!-- Leaflet Mouse Position CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.css" />
+
+    <!-- Leaflet Measure CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-measure/leaflet-measure.css" />
+
+    <!-- EasyPrint CSS Library -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-easyprint/easyPrint.css" />
+
+    <!-- Marker Cluster -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-markercluster/MarkerCluster.css" />
+    <link rel="stylesheet" href="assets/plugins/leaflet-markercluster/MarkerCluster.Default.css" />
+
+    <!-- Routing -->
+    <link rel="stylesheet" href="assets/plugins/leaflet-routing/leaflet-routing-machine.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        #map {
+            height: 100vh;
+        }
+
+        /* 
+        Background pada Judul
+        
+        .info {
+            padding: 6px 8px;
+            font: 10px/12px Arial, Helvetica, sans-serif;
+            background: rgba(16, 188, 19, 0.8);
+            box-shadow: 0 0 11px rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+            text-align: center;
+        }
+
+        .info h2 {
+            margin: 0;
+            padding: 3px 0;
+            color: #ffffff;
+            text-align: center;
+        }
+        */
+
+        body {
+            background-color: rgb(231, 224, 231);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        p {
+            color: rgb(6, 15, 15);
+            text-align: justify;
+        }
+
+        .center-image {
+            display: block;
+            margin: 0 auto;
+            /* Ini akan menempatkan gambar ke tengah secara horizontal */
+        }
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            width: 100%;
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card mt-3 shadow">
+            <!-- Konten kartu Anda di sini -->
+        </div>
+    
+        <div class="alert alert-info text-center mt-4" role="alert">
+            <h2>
+                <i class="fa-solid fa-city"></i>
+                Sistem Informasi Kantor Kecamatan Kabupaten Sleman
+            </h2>
+        </div>
+    
+        <div id="map"></div>
+    
+        <!-- Tombol Kembali -->
+        <div class="text-end mt-3">
+            <a href="../pgwebacara9/p/carousel/index.html" class="btn btn-primary">Kembali</a>
+        </div>
+    </div>
+    
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+        <!-- Search JavaScript Library -->
+        <script src="assets/plugins/leaflet-search/leaflet-search.js"></script>
+
+        <!-- Geolocation Javascript Library -->
+        <script
+            src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+
+        <!-- Leaflet Mouse Position JavaScript Library -->
+        <script src="assets/plugins/leaflet-mouseposition/L.Control.MousePosition.js"></script>
+
+        <!-- Leaflet Measure JavaScript Library -->
+        <script src="assets/plugins/leaflet-measure/leaflet-measure.js"></script>
+
+        <!-- EasyPrint JavaScript Library -->
+        <script src="assets/plugins/leaflet-easyprint/leaflet.easyPrint.js"></script>
+
+        <script src="assets/plugins/leaflet-markercluster/leaflet.markercluster.js"></script>
+        <script src="assets/plugins/leaflet-markercluster/leaflet.markercluster-src.js"></script>
+        <script src="assets/plugins/leaflet-routing/leaflet-routing-machine.js"></script>
+        <script src="assets/plugins/leaflet-routing/leaflet-routing-machine.min.js"></script>
+
+
+        <script>
+            var map = L.map('map').setView([-7.7956, 110.3695], 10);
+
+
+
+            // Create a GeoJSON layer for polygon data
+            var geoserver = L.geoJson(null, {
+                style: function (feature) {
+                    // Adjust this function to define styles based on your polygon properties
+                    var value = feature.properties.jumlah; // Change this to your actual property name
+                    return {
+                        fillColor: getColor(value),
+                        weight: 2,
+                        opacity: 1,
+                        color: "black",
+                        dashArray: "3",
+                        fillOpacity: 0.7,
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    var content = "Kecamatan: " + feature.properties.kecamatan + "<br>" +
+                        "Jumlah: " + feature.properties.jumlah + "<br>";
+                    layer.on({
+                        click: function (e) {
+                            geoserver.bindPopup(content).openPopup();
+                        },
+                        mouseover: function (e) {
+                            geoserver.bindTooltip(feature.properties.kecamatan).openTooltip();
+                        },
+                        mouseout: function (e) {
+                            geoserver.closePopup();
+                            geoserver.closeTooltip();
+                        }
+                    });
+                }
+            });
+            $.getJSON("geoserver.php", function (data) {
+                geoserver.addData(data);
+                geoserver.addTo(map);
+                map.fitBounds(geoserver.getBounds());
+            });
+
+            $.getJSON("data/Jalan_Sleman.geojson", function (data) {
+                Jalan_Sleman.addData(data);
+                map.addLayer(Jalan_Sleman);
+                map.fitBounds(Jalan_Sleman.getBounds());
+            });
+            map.createPane("pane_Jalan_Sleman");
+            map.getPane("pane_Jalan_Sleman").style.zIndex = 405;
+
+            var Jalan_Sleman = L.geoJson(null, {
+                style: function (feature) {
+                    if (feature.properties.FUNGSI === "Jalan Arteri") {
+                        return {
+                            color: "#9d2224", //Warna garis
+                            dashArray: '',
+                            weight: 4, //Tebal garis
+                            opacity: 1, //Transparansi garis
+                        }
+                    }
+                    else if (feature.properties.FUNGSI === "Jalan Kolektor") {
+                        return {
+                            color: "#9d2224", //Warna garis
+                            dashArray: '',
+                            weight: 2.5, //Tebal garis
+                            opacity: 1, //Transparansi garis
+                        }
+                    }
+                    else if (feature.properties.FUNGSI === "Jalan Lokal") {
+                        return {
+                            color: "#9d2224", //Warna garis
+                            dashArray: '',
+                            weight: 1, //Tebal garis
+                            opacity: 1, //Transparansi garis
+                        }
+                    }
+                    else if (feature.properties.FUNGSI === "Rel Kereta") {
+                        return {
+                            color: "#000000", //Warna garis
+                            dashArray: '5',
+                            weight: 2, //Tebal garis
+                            opacity: 1, //Transparansi garis
+                        }
+                    }
+                },
+                onEachFeature: function (feature, layer) {
+                    var content = "Jenis: " + feature.properties.FUNGSI + "<br>" +
+                        "Nama: " + feature.properties.NAMA + "<br>" +
+                        "Kewenangan: " + feature.properties.KEWENANGAN;
+
+                    var contentTable = "<table>" +
+                        "<tr><th>Jenis</th><td>" + feature.properties.FUNGSI + "</td></tr>" +
+                        "<tr><th>Nama</th><td>" + feature.properties.NAMA + "</td></tr>" +
+                        "<tr><th>Kewenangan</th><td>" + feature.properties.KEWENANGAN + "</td></tr>" +
+                        "</table>";
+
+                    layer.on({
+                        click: function (e) { //Fungsi ketika obyek diklik
+                            Jalan_Sleman.bindPopup(
+                                'Jenis: ' + feature.properties.FUNGSI + '<br>' +
+                                'Nama: ' + feature.properties.NAMA + '<br>' +
+                                'Kewenangan: ' + feature.properties.KEWENANGAN
+                            );
+                        },
+                        mouseover: function (e) { //Fungsi mouse berada di atas obyek untuk highlight
+                            var layer = e.target; //variabel layer
+                            layer.setStyle({ //Highlight style
+                                weight: 2,  //Tebal garis
+                                color: "#00FFFF", //Warna garis
+                                opacity: 1, //Transparansi garis
+                            });
+                            Jalan_Sleman.bindTooltip("Jalan " + feature.properties.NAMA, { sticky: true });
+                        },
+                        mouseout: function (e) { //Fungsi mouse keluar dari obyek
+                            Jalan_Sleman.resetStyle(e.target); //Mengembalikan style garis ke style awal
+                            map.closePopup(); //Menutup popup
+                        }
+                    });
+                },
+                // pane: "pane_Jalan_Sleman"
+            });
+
+            /* memanggil data file geojson polygon 01 – Data Interval/Rasio */
+    $.getJSON("data/BatasAdmin_Sleman.geojson", function (data) {
+        BatasAdmin_Sleman.addData(data);
+        map.addLayer(BatasAdmin_Sleman);
+        map.fitBounds(BatasAdmin_Sleman.getBounds());
+    });
+
+    /* GeoJSON Polygon Style 01*/
+    var BatasAdmin_Sleman = L.geoJson(null, {
+        style: function (feature) {
+            return {
+                opacity: 1,
+                color: 'black',
+                weight: 1,
+                dashArray: '3',
+                fillOpacity: 0.7, 
+                fillColor: 'cyan'
+            }
+        },
+        
+        onEachFeature: function (feature, layer) {
+            var content = "Desa: " + feature.properties.Desa + "<br>" +
+                "Kecamatan: " + feature.properties.Kecamatan + "<br>" +
+                "Kabupaten: " + feature.properties.Kabupaten;
+
+            var contentTable = "<table>" +
+                "<tr><th>Desa</th><td>" + feature.properties.Desa + "</td></tr>" +
+                "<tr><th>Kecamatan</th><td>" + feature.properties.Kecamatan + "</td></tr>" +
+                "<tr><th>Kabupaten</th><td>" + feature.properties.Kabupaten + "</td></tr>" +
+                "</table>";
+
+            layer.on({
+                click: function (e) { //Fungsi ketika obyek diklik
+                    BatasAdmin_Sleman.bindPopup(content);
+                },
+                mouseover: function (e) { //Fungsi mouse berada di atas obyek untuk highlight
+                    var layer = e.target; //variabel layer
+                    layer.setStyle({ //Highlight style
+                        color: "white", //Warna garis tepi polygon
+                        weight: 0.2, //Tebal garis tepi polygon
+                        opacity: 1, //Transparansi garis tepi polygon
+                        fillColor: "yellow", //Warna tengah polygon
+                        fillOpacity: 0.7 //Transparansi polygon
+                    });
+                    BatasAdmin_Sleman.bindTooltip("Desa " + feature.properties.Desa, {sticky: true});
+                },
+                mouseout: function (e) { //Fungsi mouse keluar dari obyek
+                    BatasAdmin_Sleman.resetStyle(e.target); //Mengembalikan style garis ke style awal
+                    map.closePopup(); //Menutup popup
+                }
+            });
+        }
+    });
+
+
+
+            /* Judul dan Subjudul
+            var title = L.control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>WEBGIS | JUMLAH PENDUDUK KABUPATEN SLEMAN DAN PERSEBARAN FASILITAS PERKANTORAN </h2>MATAKULIAH PEMROGRAMAN SPASIAL : WEB';
+            };
+            title.addTo(map);
+            */
+
+            // Pastikan Leaflet dan pustaka pendukung dimuat terlebih dahulu.
+            // Buat kontrol watermark
+            L.Control.Watermark = L.Control.extend({
+                onAdd: function (map) {
+                    var img = L.DomUtil.create('img', 'custom-watermark'); // Tambahkan class CSS jika diperlukan
+                    img.src = 'assets/img/logo/LOGO_SIG_BLUE.png'; // Sesuaikan dengan path gambar Anda
+                    img.style.width = '200px';
+                    return img;
+                }
+            });
+
+            // Tambahkan kontrol watermark ke peta
+            L.control.watermark = function (opts) {
+                return new L.Control.Watermark(opts);
+            };
+            L.control.watermark({ position: 'bottomleft' }).addTo(map);
+
+            // Image Legend
+            L.Control.Legend = L.Control.extend({
+                onAdd: function (map) {
+                    var container = L.DomUtil.create('div', 'legend-container'); // Membuat div container
+                    var img = L.DomUtil.create('img', 'legend-image', container); // Membuat elemen gambar dalam container
+                    img.src = 'assets/img/legend/legend.png';
+                    img.style.width = '200px';
+                    return container; // Mengembalikan container yang berisi gambar
+                }
+            });
+
+            L.control.legend = function (opts) {
+                return new L.Control.Legend(opts);
+            }
+
+            L.control.legend({ position: 'bottomleft' }).addTo(map);
+
+            //plugin search
+            var searchControl = new L.Control.Search({
+                position: "topleft",
+                layer: geoserver, //Nama variabel layer
+                propertyName: "kecamatan", //Field untuk pencarian
+                marker: false,
+                moveToLocation: function (latlng, title, map) {
+                    var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+                    map.setView(latlng, zoom);
+                },
+            });
+            searchControl
+                .on("search:locationfound", function (e) {
+                    e.layer.setStyle({
+                        fillColor: "#ffff00",
+                        color: "#0000ff",
+                    });
+                })
+                .on("search:collapse", function (e) {
+                    featuresLayer.eachLayer(function (layer) {
+                        featuresLayer.resetStyle(layer);
+                    });
+                });
+            map.addControl(searchControl);
+
+            /*Plugin Geolocation */
+            var locateControl = L.control
+                .locate({
+                    position: "topleft",
+                    drawCircle: true,
+                    follow: true,
+                    setView: true,
+                    keepCurrentZoomLevel: false,
+                    markerStyle: {
+                        weight: 10,
+                        opacity: 5,
+                        fillOpacity: 5,
+                    },
+                    circleStyle: {
+                        weight: 100,
+                        clickable: false,
+                    },
+                    icon: "fas fa-crosshairs",
+                    metric: true,
+                    strings: {
+                        title: "Click for Your Location",
+                        popup: "You're here. Accuracy {distance} {unit}",
+                        outsideMapBoundsMsg: "Not available",
+                    },
+                    locateOptions: {
+                        maxZoom: 16,
+                        watch: true,
+                        enableHighAccuracy: true,
+                        maximumAge: 10000,
+                        timeout: 10000,
+                    },
+                })
+                .addTo(map);
+
+            /*Plugin Mouse Position Coordinate */
+            L.control.mousePosition({ position: "bottomright", separator: ",", prefix: "Point Coodinate: " }).addTo(map);
+
+            /*Plugin Measurement Tool */
+            var measureControl = new L.Control.Measure({
+                position: "topleft",
+                primaryLengthUnit: "meters",
+                secondaryLengthUnit: "kilometers",
+                primaryAreaUnit: "hectares",
+                secondaryAreaUnit: "sqmeters",
+                activeColor: "#FF0000",
+                completedColor: "#00FF00",
+            });
+            measureControl.addTo(map);
+
+
+            /*Plugin EasyPrint */
+            L.easyPrint({
+                title: "Print",
+            }).addTo(map);
+
+            /*  Tile Basemap */ // Pilihan basemap diakses pada https://leaflet-extras.github.io/leaflet-providers/preview/
+            var basemap1 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    attribution:
+                        '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="DIVSIG UGM" target="_blank">DIVSIG UGM</a>',
+                }
+            );
+            var basemap2 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                {
+                    attribution:
+                        'Tiles &copy; Esri | <a href="Latihan WebGIS" target="_blank">DIVSIG UGM</a>',
+                }
+            );
+            var basemap3 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+                    attribution:
+                        'Tiles &copy; Esri | <a href="Lathan WebGIS" target="_blank">DIVSIG UGM</a>',
+                }
+            );
+            var basemap4 = L.tileLayer(
+                "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+                {
+                    attribution:
+                        '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+                }
+            );
+            var basemap5 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+                {
+                    attribution:
+                        'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+                }
+            );
+            var basemap6 = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                {
+                    attribution:
+                        'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+                }
+            );
+            var basemap7 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+                {
+                    attribution:
+                        'Tiles &copy; Esri &mdash; Source: US National Park Service',
+                }
+            );
+
+            basemap1.addTo(map);
+
+            /* Control Layer */
+            var baseMaps = {
+                OpenStreetMap: basemap1,
+                "Esri World Street": basemap2,
+                "Esri Imagery": basemap3,
+                "Stadia Dark Mode": basemap4,
+                "Esri Nat Geo World Map": basemap5,
+                "Topo Map": basemap6,
+                "EsriWorldPhysical": basemap7
+            };
+
+            var overlayMaps = {
+                "Jumlah Penduduk": geoserver,
+                "Jaringan Jalan": Jalan_Sleman,
+                "Batas Administrasi": BatasAdmin_Sleman,
+            };
+
+            L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+
+            // Plugin Routing
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(-7.698019689147051, 110.44516755907983),
+                    L.latLng(-7.75826466100891, 110.39357506015709),
+                ],
+                routeWhileDragging: true,
+            }).addTo(map);
+
+
+            // Layer Marker
+            var addressPoints = [
+                [-7.698019689147051, 110.44516755907983, "Kantor Kecamatan Ngemplak"],
+                [-7.7241363798445075, 110.40093315073996, "Kantor Kecamatan Ngaglik"],
+                [-7.68392927689691, 110.34053314505823, "Kantor Kecamatan Sleman"],
+                [-7.75826466100891, 110.39357506015709, "Kantor Kecamatan Depok"],
+                [-7.73401768751956, 110.32877435622201, "Kantor Kecamatan Mlati"],
+                [-7.769663957788461, 110.30007311707097, "Kantor Kecamatan Godean"],
+                [-7.805086501372151, 110.44273233574545, "Kantor Kecamatan Berbah"],
+                [-7.658721970316982, 110.45582861077374, "Kantor Kecamatan Cangkringan"],
+                [-7.667270162621609, 110.42001373987085, "Kantor Kecamatan Pakem"],
+                [-7.6519932043674705, 110.36977740094267, "Kantor Kecamatan Turi"],
+                [-7.651291712305269, 110.32676774345032, "Kantor Kecamatan Tempel"],
+                [-7.721020154404865, 110.30837596762291, "Kantor Kecamatan Seyegan"],
+                [-7.772319435165308, 110.25350926647037, "Kantor Kecamatan Moyudan"],
+                [-7.769990892716739, 110.46695877684347, "Kantor Kecamatan Kalasan"],
+                [-7.794981122153528, 110.32220288481493, "Kantor Kecamatan Gamping"],
+                [-7.725230526497276, 110.23472777042419, "Kantor Kecamatan Minggir"],
+                [-7.756224048448937, 110.49006356918888, "Kantor Kecamatan Prambanan"],
+            ];
+
+            var markers = L.markerClusterGroup();
+
+            for (var i = 0; i < addressPoints.length; i++) {
+                var a = addressPoints[i];
+                var title1 = a[2];
+                var marker = L.marker(new L.LatLng(a[0], a[1]), { title: title1 });
+
+                marker.bindPopup(title1);
+                markers.addLayer(marker);
+            }
+
+            map.addLayer(markers);
+            // Function to determine the color based on the 'value' attribute
+            function getColor(value) {
+                return value > 75000
+                    ? "#FF0000"
+                    : value > 50000
+                        ? "#FFA500"
+                        : value > 10
+                            ? "#F5F5F5"
+                            : "#F5F5F5";
+            }
+
+        </script>
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+            <symbol id="check2" viewBox="0 0 16 16">
+                <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+            </symbol>
+            <symbol id="circle-half" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+            </symbol>
+            <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+                <path
+                    d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
+                <path
+                    d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
+            </symbol>
+            <symbol id="sun-fill" viewBox="0 0 16 16">
+                <path
+                    d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+            </symbol>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+            <symbol id="bootstrap" viewBox="0 0 118 94">
+                <title>Bootstrap</title>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z">
+                </path>
+            </symbol>
+            <symbol id="facebook" viewBox="0 0 16 16">
+                <path
+                    d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+            </symbol>
+            <symbol id="instagram" viewBox="0 0 16 16">
+                <path
+                    d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+            </symbol>
+        </svg>
+
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+                <p class="col-md-4 mb-0 text-body-secondary">&copy; 2023 Muhammad Nashan Fauzian, D4 SIG</p>
+
+                <a href="/"
+                    class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32">
+                        <use xlink:href="#bootstrap" />
+                    </svg>
+                </a>
+
+                <ul class="nav col-md-4 justify-content-end">
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
+
+                    <li class="ms-3"><a class="text-body-secondary" href="https://www.instagram.com/son.tolo.yo"><svg
+                                class="bi" width="24" height="24">
+                                <use xlink:href="#instagram" />
+                            </svg></a></li>
+                    <li class="ms-3"><a class="text-body-secondary"
+                            href="https://m.facebook.com/profile.php/?id=100008461382542&name=xhp_nt__fb__action__open_user"><svg
+                                class="bi" width="24" height="24">
+                                <use xlink:href="#facebook" />
+                            </svg></a></li>
+                </ul>
+            </footer>
+        </div>
+
+
+</body>
+
+</html>
